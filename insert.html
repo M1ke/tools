@@ -4,8 +4,9 @@
     <title>SQL Insert from Select</title>
   </head>
   <body>
-    <h1>>SQL Insert from Select</h1>
+    <h1>SQL Insert from Select</h1>
     <p>Made by M1ke - <a href="https://github.com/M1ke/sql-cli-to-csv" target="_blank" title="This opens in a new tab">Find this on GitHub</a></p>
+    <p><- <a href="index.html">back to SQL to CSV</a></p>
     <h2><label for="table">Table name</label></h2>
     <input name="table" id="table"/>
     <h2><label for="input">Input</label></h2>
@@ -15,7 +16,7 @@
     <textarea name="output" cols="150" rows="19" id="output"></textarea>
     <p><em>All processing for this is done in your browser; no data is sent to any remote server</em></p>
     <h3>Example</h3>
-    <p>If you're unsure what input this is expecting, try pasting in the following:</p>
+    <p>This process converts the SQL output of a query run with the "\G" suffix, creating a new INSERT query from it. This is similar to editing a row in phpMyAdmin, editing fields and clicking "insert as new". If you're unsure what input this is expecting, try pasting in the following:</p>
     <pre>
 *************************** 1. row ***************************
                        user_id: 1
@@ -48,7 +49,7 @@
       const fieldName = match[1].trim()
       const fieldValue = match[2].trim()
       
-      if (skipEmpty && (fieldValue === '0' || fieldValue === '')) {
+      if (skipEmpty && (fieldValue === '0' || fieldValue === '') || fieldValue === '0000-00-00 00:00:00' || fieldValue === '0000-00-00')) {
         continue
       }
       
@@ -77,6 +78,7 @@
 
       document.getElementById('input').addEventListener('input', generateInsertSQL)
       document.getElementById('table').addEventListener('input', generateInsertSQL)
+      document.getElementById('skip-empty').addEventListener('input', generateInsertSQL)
     </script>
   </body>
 </html>
