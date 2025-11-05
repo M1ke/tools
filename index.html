@@ -27,6 +27,11 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
+    a[target="_blank"]::after {
+        content: " ↗";
+        font-size: 0.8em;
+    }
+
     h1 {
       color: #333;
       margin-bottom: 10px;
@@ -41,7 +46,7 @@
 
     .suffix {
         color: #666;
-        top: 40px;
+        margin-top: 20px;
         font-size: 16px;
     }
 
@@ -124,7 +129,7 @@
         <p>Transform SQL SELECT output (vertical format with \G) into INSERT statements for easy data duplication.</p>
       </a>
     </div>
-    <p class="suffix">For additional encoding and decoding tools, check out <a href="https://cryptii.com/" target="_blank">Cryptii</a>.</p>
+    <p class="suffix">For additional encoding and decoding tools, check out <a href="https://cryptii.com/" target="_blank" title="Opens in a new tab"> Cryptii</a>.</p>
     <footer>
       <p>Made by M1ke - <a href="https://github.com/M1ke/tools" target="_blank">Find this on GitHub</a></p>
       <p><em>All tools process data locally in your browser; no data is sent to any remote server</em></p>
