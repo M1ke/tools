@@ -180,7 +180,7 @@
   <p class="subtitle">Transform CSV data using AI-generated JavaScript functions - all processing happens locally in your browser</p>
 
   <div class="info-box">
-    <strong>How it works:</strong> Paste your CSV data, generate a prompt for an AI assistant, add your transformation requirements, get a JavaScript function from the AI, paste it here, and transform your data - all without uploading your data anywhere.
+    <strong>How it works:</strong> Paste your CSV data, describe your desired transformation, generate a ready-to-use AI prompt, get a JavaScript function from your preferred AI assistant, paste it here, and transform your data - all without uploading your data anywhere.
   </div>
 
   <div class="section">
@@ -194,25 +194,40 @@ Jane Smith,jane@example.com,25"></textarea>
     <div id="csv-error" class="error"></div>
   </div>
 
-  <div class="section">
-    <button id="generate-prompt-btn">
+  <div class="section" id="csv-preview-section" style="display: none;">
+    <div class="info-box" style="background: #f1f8e9; border-color: #aed581;">
+      <strong>CSV Detected!</strong>
+      <div id="csv-preview-content"></div>
+    </div>
+  </div>
+
+  <div class="section" id="transformation-section" style="display: none;">
+    <label for="transformation-input">
       <span class="step-number">2</span>
+      Describe your transformation:
+    </label>
+    <textarea id="transformation-input" placeholder="Example: Filter rows where age is greater than 25, and return only the name and email fields in uppercase"></textarea>
+  </div>
+
+  <div class="section" id="generate-section" style="display: none;">
+    <button id="generate-prompt-btn">
+      <span class="step-number">3</span>
       Generate AI Prompt
     </button>
   </div>
 
   <div class="section" id="prompt-section" style="display: none;">
     <label for="generated-prompt">
-      <span class="step-number">3</span>
+      <span class="step-number">4</span>
       Copy this prompt to your AI assistant (ChatGPT, Claude, etc.):
     </label>
     <textarea id="generated-prompt" readonly></textarea>
-    <div class="success visible">Prompt generated! Copy it, add your transformation instructions, and run it in your preferred AI assistant.</div>
+    <div class="success visible">Prompt generated! Copy it and paste it directly into your preferred AI assistant.</div>
   </div>
 
   <div class="section">
     <label for="function-input">
-      <span class="step-number">4</span>
+      <span class="step-number">5</span>
       Paste the JavaScript function from the AI response:
     </label>
     <textarea id="function-input" placeholder="function processRow(row) {
@@ -224,14 +239,14 @@ Jane Smith,jane@example.com,25"></textarea>
 
   <div class="section">
     <button id="execute-btn">
-      <span class="step-number">5</span>
+      <span class="step-number">6</span>
       Transform CSV Data
     </button>
   </div>
 
   <div class="section" id="output-section" style="display: none;">
     <label for="output">
-      <span class="step-number">6</span>
+      <span class="step-number">7</span>
       Transformed output:
     </label>
     <textarea id="output" readonly></textarea>
@@ -245,6 +260,11 @@ Jane Smith,jane@example.com,25"></textarea>
   console.log('AI CSV Transformer initialized');
 
   const csvInput = document.getElementById('csv-input');
+  const csvPreviewSection = document.getElementById('csv-preview-section');
+  const csvPreviewContent = document.getElementById('csv-preview-content');
+  const transformationSection = document.getElementById('transformation-section');
+  const transformationInput = document.getElementById('transformation-input');
+  const generateSection = document.getElementById('generate-section');
   const generatePromptBtn = document.getElementById('generate-prompt-btn');
   const generatedPrompt = document.getElementById('generated-prompt');
   const promptSection = document.getElementById('prompt-section');
@@ -290,7 +310,7 @@ Jane Smith,jane@example.com,25"></textarea>
   }
 
   // Generate AI prompt based on CSV structure
-  function generateAIPrompt(headers, sampleRows) {
+  function generateAIPrompt(headers, sampleRows, transformationDescription) {
     console.log('Generating AI prompt...');
 
     const sampleData = sampleRows.slice(0, 2).map(row => {
@@ -305,6 +325,9 @@ The CSV has the following structure:
 Example rows:
 ${sampleData}
 
+Transformation requirements:
+${transformationDescription}
+
 Please write a function with this exact signature:
 
 \`\`\`javascript
@@ -312,19 +335,15 @@ function processRow(row) {
   // row is an object with keys: ${headers.join(', ')}
   // Example: { ${headers.map(h => `${h}: "value"`).join(', ')} }
 
-  // TODO: Add your transformation logic here
+  // Implement the transformation described above
 
   // Return the transformed data
   // You can return:
   // - An object (will be converted to CSV)
   // - A string (will be output as-is, one per line)
   // - null/undefined (to skip this row)
-
-  return row; // Replace this with your transformation
 }
 \`\`\`
-
-[ADD YOUR TRANSFORMATION REQUIREMENTS HERE - explain what you want the function to do]
 
 Important:
 1. Only return the processRow function
@@ -429,27 +448,33 @@ Important:
     csvError.classList.remove('visible');
     csvError.textContent = '';
 
-    const csvText = csvInput.value.trim();
+    const transformationDescription = transformationInput.value.trim();
 
-    if (!csvText) {
-      csvError.textContent = 'Please paste CSV data first';
+    if (!transformationDescription) {
+      csvError.textContent = 'Please describe your transformation first';
       csvError.classList.add('visible');
-      console.warn('No CSV data provided');
+      console.warn('No transformation description provided');
+      return;
+    }
+
+    if (!parsedCSV) {
+      csvError.textContent = 'CSV data not parsed. Please paste CSV data first.';
+      csvError.classList.add('visible');
+      console.warn('CSV not parsed');
       return;
     }
 
     try {
-      parsedCSV = parseCSV(csvText);
-      const prompt = generateAIPrompt(parsedCSV.headers, parsedCSV.rows);
+      const prompt = generateAIPrompt(parsedCSV.headers, parsedCSV.rows, transformationDescription);
 
       generatedPrompt.value = prompt;
       promptSection.style.display = 'block';
 
       console.log('Prompt displayed to user');
     } catch (error) {
-      csvError.textContent = `Error parsing CSV: ${error.message}`;
+      csvError.textContent = `Error generating prompt: ${error.message}`;
       csvError.classList.add('visible');
-      console.error('CSV parsing error:', error);
+      console.error('Prompt generation error:', error);
     }
   });
 
@@ -505,10 +530,60 @@ Important:
 
   // Update parsed CSV when input changes
   csvInput.addEventListener('input', () => {
-    console.log('CSV input changed, clearing cached data');
-    parsedCSV = null;
-    promptSection.style.display = 'none';
-    outputSection.style.display = 'none';
+    console.log('CSV input changed');
+    csvError.classList.remove('visible');
+    csvError.textContent = '';
+
+    const csvText = csvInput.value.trim();
+
+    if (!csvText) {
+      console.log('CSV input cleared');
+      parsedCSV = null;
+      csvPreviewSection.style.display = 'none';
+      transformationSection.style.display = 'none';
+      generateSection.style.display = 'none';
+      promptSection.style.display = 'none';
+      outputSection.style.display = 'none';
+      return;
+    }
+
+    try {
+      parsedCSV = parseCSV(csvText);
+
+      // Pick a random row for preview
+      const randomIndex = Math.floor(Math.random() * parsedCSV.rows.length);
+      const exampleRow = parsedCSV.rows[randomIndex];
+
+      console.log(`Showing preview with random row ${randomIndex + 1}`);
+
+      // Display preview
+      const previewHTML = `
+        <p style="margin-top: 10px;"><strong>Headers:</strong> ${parsedCSV.headers.join(', ')}</p>
+        <p style="margin-top: 10px;"><strong>Example row:</strong></p>
+        <pre style="background: white; padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 12px;">${JSON.stringify(exampleRow, null, 2)}</pre>
+        <p style="margin-top: 10px; font-size: 13px;">Total rows: ${parsedCSV.rows.length}</p>
+      `;
+
+      csvPreviewContent.innerHTML = previewHTML;
+      csvPreviewSection.style.display = 'block';
+      transformationSection.style.display = 'block';
+      generateSection.style.display = 'block';
+
+      // Reset later sections
+      promptSection.style.display = 'none';
+      outputSection.style.display = 'none';
+
+    } catch (error) {
+      console.error('CSV parsing error:', error);
+      parsedCSV = null;
+      csvError.textContent = `Error parsing CSV: ${error.message}`;
+      csvError.classList.add('visible');
+      csvPreviewSection.style.display = 'none';
+      transformationSection.style.display = 'none';
+      generateSection.style.display = 'none';
+      promptSection.style.display = 'none';
+      outputSection.style.display = 'none';
+    }
   });
 
   console.log('Event listeners attached, ready for input');
