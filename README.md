@@ -1,9 +1,18 @@
-# Web tools
+# Web Tools
 
-A useful suite of browser-based tools to carry out tasks.
+A collection of browser-based developer utilities.
 
-## Contents
+## Tools
 
-[SQL CLI to CSV](https://m1ke.github.io/tools/sql-csv.html)
+### [JWT Parser and Editor](https://m1ke.github.io/tools/jwt.html)
+Decode JWT tokens, edit header and payload sections, and reconstruct tokens with modified values.
 
-[SQL Inserts](https://m1ke.github.io/tools/sql-insert.html)
+### [SQL CLI to CSV Converter](https://m1ke.github.io/tools/sql-csv.html)
+Convert SQL command-line table output into CSV format, extract specific columns, and wrap values with custom templates.
+
+### [SQL Insert Generator](https://m1ke.github.io/tools/sql-insert.html)
+Transform SQL SELECT output (vertical format with \G) into INSERT statements for easy data duplication.
+
+---
+
+All tools process data locally in your browser; no data is sent to any remote server.
