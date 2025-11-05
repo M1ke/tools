@@ -56,6 +56,10 @@ Converts SQL `SELECT ... \G` output (vertical format) into INSERT statements.
 - Keep the UI simple and functional
 - Test thoroughly since there's no build/test pipeline
 
+## Git Workflow
+
+**Base Branch**: The default branch for this repository is `main`. When creating pull requests, target the `main` branch.
+
 ## Deployment
 
 The repository is deployed to GitHub Pages at `https://m1ke.github.io/tools/`
