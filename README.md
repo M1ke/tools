@@ -1,5 +1,9 @@
-# SQL CLI to CSV
+# Web tools
 
-Converts tabular output from SQL command line to CSV text
+A useful suite of browser-based tools to carry out tasks.
 
-[View it here](https://m1ke.github.io/sql-cli-to-csv/)
+## Contents
+
+[SQL CLI to CSV](https://m1ke.github.io/tools/sql-csv.html)
+
+[SQL Inserts](https://m1ke.github.io/tools/sql-insert.html)
