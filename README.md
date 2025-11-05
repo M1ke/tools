@@ -4,6 +4,9 @@ A collection of browser-based developer utilities.
 
 ## Tools
 
+### [AI CSV Transformer](https://m1ke.github.io/tools/ai-csv.html)
+Transform CSV data using AI-generated JavaScript functions without uploading your data to any LLM service.
+
 ### [JWT Parser and Editor](https://m1ke.github.io/tools/jwt.html)
 Decode JWT tokens, edit header and payload sections, and reconstruct tokens with modified values.
 
