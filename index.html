@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Tools - Developer Utilities</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 40px;
+      font-size: 16px;
+    }
+
+    .tools-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tool-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .tool-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .tool-card h2 {
+      color: #667eea;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .tool-card p {
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Web Tools</h1>
+    <p class="subtitle">A collection of browser-based developer utilities</p>
+
+    <div class="tools-list">
+      <a href="jwt.html" class="tool-card">
+        <h2>JWT Parser and Editor</h2>
+        <p>Decode JWT tokens, edit header and payload sections, and reconstruct tokens with modified values.</p>
+      </a>
+
+      <a href="sql-csv.html" class="tool-card">
+        <h2>SQL CLI to CSV Converter</h2>
+        <p>Convert SQL command-line table output into CSV format, extract specific columns, and wrap values with custom templates.</p>
+      </a>
+
+      <a href="sql-insert.html" class="tool-card">
+        <h2>SQL Insert Generator</h2>
+        <p>Transform SQL SELECT output (vertical format with \G) into INSERT statements for easy data duplication.</p>
+      </a>
+    </div>
+
+    <footer>
+      <p>Made by M1ke - <a href="https://github.com/M1ke/tools" target="_blank">Find this on GitHub</a></p>
+      <p><em>All tools process data locally in your browser; no data is sent to any remote server</em></p>
+    </footer>
+  </div>
+</body>
+</html>
