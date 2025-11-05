@@ -198,6 +198,7 @@ Jane Smith,jane@example.com,25"></textarea>
     <div class="info-box" style="background: #f1f8e9; border-color: #aed581;">
       <strong>CSV Detected!</strong>
       <div id="csv-preview-content"></div>
+      <button id="choose-another-row-btn" style="margin-top: 10px; padding: 8px 16px; font-size: 13px;">Choose Another Row</button>
     </div>
   </div>
 
@@ -225,7 +226,7 @@ Jane Smith,jane@example.com,25"></textarea>
     <div class="success visible">Prompt generated! Copy it and paste it directly into your preferred AI assistant.</div>
   </div>
 
-  <div class="section">
+  <div class="section" id="function-section" style="display: none;">
     <label for="function-input">
       <span class="step-number">5</span>
       Paste the JavaScript function from the AI response:
@@ -237,7 +238,7 @@ Jane Smith,jane@example.com,25"></textarea>
     <div id="function-error" class="error"></div>
   </div>
 
-  <div class="section">
+  <div class="section" id="execute-section" style="display: none;">
     <button id="execute-btn">
       <span class="step-number">6</span>
       Transform CSV Data
@@ -262,13 +263,16 @@ Jane Smith,jane@example.com,25"></textarea>
   const csvInput = document.getElementById('csv-input');
   const csvPreviewSection = document.getElementById('csv-preview-section');
   const csvPreviewContent = document.getElementById('csv-preview-content');
+  const chooseAnotherRowBtn = document.getElementById('choose-another-row-btn');
   const transformationSection = document.getElementById('transformation-section');
   const transformationInput = document.getElementById('transformation-input');
   const generateSection = document.getElementById('generate-section');
   const generatePromptBtn = document.getElementById('generate-prompt-btn');
   const generatedPrompt = document.getElementById('generated-prompt');
   const promptSection = document.getElementById('prompt-section');
+  const functionSection = document.getElementById('function-section');
   const functionInput = document.getElementById('function-input');
+  const executeSection = document.getElementById('execute-section');
   const executeBtn = document.getElementById('execute-btn');
   const outputTextarea = document.getElementById('output');
   const outputSection = document.getElementById('output-section');
@@ -276,6 +280,7 @@ Jane Smith,jane@example.com,25"></textarea>
   const functionError = document.getElementById('function-error');
 
   let parsedCSV = null;
+  let selectedExampleRow = null;
 
   // Parse CSV data into array of objects
   function parseCSV(csvText) {
@@ -309,20 +314,35 @@ Jane Smith,jane@example.com,25"></textarea>
     return { headers, rows };
   }
 
+  // Display CSV preview with a specific row
+  function displayCSVPreview(headers, rows, rowIndex) {
+    console.log(`Displaying CSV preview with row ${rowIndex + 1}`);
+
+    const exampleRow = rows[rowIndex];
+    selectedExampleRow = exampleRow;
+
+    const previewHTML = `
+      <p style="margin-top: 10px;"><strong>Headers:</strong> ${headers.join(', ')}</p>
+      <p style="margin-top: 10px;"><strong>Example row (row ${rowIndex + 1} of ${rows.length}):</strong></p>
+      <pre style="background: white; padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 12px;">${JSON.stringify(exampleRow, null, 2)}</pre>
+      <p style="margin-top: 10px; font-size: 13px;">Total rows: ${rows.length}</p>
+    `;
+
+    csvPreviewContent.innerHTML = previewHTML;
+  }
+
   // Generate AI prompt based on CSV structure
-  function generateAIPrompt(headers, sampleRows, transformationDescription) {
+  function generateAIPrompt(headers, exampleRow, transformationDescription) {
     console.log('Generating AI prompt...');
 
-    const sampleData = sampleRows.slice(0, 2).map(row => {
-      return headers.map(h => `${h}: "${row[h]}"`).join(', ');
-    }).join('\n');
+    const sampleData = headers.map(h => `${h}: "${exampleRow[h]}"`).join(', ');
 
     const prompt = `I need you to write a JavaScript function that transforms CSV data.
 
 The CSV has the following structure:
 - Headers: ${headers.join(', ')}
 
-Example rows:
+Example row:
 ${sampleData}
 
 Transformation requirements:
@@ -457,20 +477,22 @@ Important:
       return;
     }
 
-    if (!parsedCSV) {
+    if (!parsedCSV || !selectedExampleRow) {
       csvError.textContent = 'CSV data not parsed. Please paste CSV data first.';
       csvError.classList.add('visible');
-      console.warn('CSV not parsed');
+      console.warn('CSV not parsed or no example row selected');
       return;
     }
 
     try {
-      const prompt = generateAIPrompt(parsedCSV.headers, parsedCSV.rows, transformationDescription);
+      const prompt = generateAIPrompt(parsedCSV.headers, selectedExampleRow, transformationDescription);
 
       generatedPrompt.value = prompt;
       promptSection.style.display = 'block';
+      functionSection.style.display = 'block';
+      executeSection.style.display = 'block';
 
-      console.log('Prompt displayed to user');
+      console.log('Prompt displayed to user, function and execute sections shown');
     } catch (error) {
       csvError.textContent = `Error generating prompt: ${error.message}`;
       csvError.classList.add('visible');
@@ -528,6 +550,18 @@ Important:
     }
   });
 
+  // Choose another row button handler
+  chooseAnotherRowBtn.addEventListener('click', () => {
+    console.log('Choose another row button clicked');
+    if (!parsedCSV) {
+      console.warn('No CSV data available');
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * parsedCSV.rows.length);
+    displayCSVPreview(parsedCSV.headers, parsedCSV.rows, randomIndex);
+  });
+
   // Update parsed CSV when input changes
   csvInput.addEventListener('input', () => {
     console.log('CSV input changed');
@@ -539,10 +573,13 @@ Important:
     if (!csvText) {
       console.log('CSV input cleared');
       parsedCSV = null;
+      selectedExampleRow = null;
       csvPreviewSection.style.display = 'none';
       transformationSection.style.display = 'none';
       generateSection.style.display = 'none';
       promptSection.style.display = 'none';
+      functionSection.style.display = 'none';
+      executeSection.style.display = 'none';
       outputSection.style.display = 'none';
       return;
     }
@@ -552,36 +589,30 @@ Important:
 
       // Pick a random row for preview
       const randomIndex = Math.floor(Math.random() * parsedCSV.rows.length);
-      const exampleRow = parsedCSV.rows[randomIndex];
+      displayCSVPreview(parsedCSV.headers, parsedCSV.rows, randomIndex);
 
-      console.log(`Showing preview with random row ${randomIndex + 1}`);
-
-      // Display preview
-      const previewHTML = `
-        <p style="margin-top: 10px;"><strong>Headers:</strong> ${parsedCSV.headers.join(', ')}</p>
-        <p style="margin-top: 10px;"><strong>Example row:</strong></p>
-        <pre style="background: white; padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 12px;">${JSON.stringify(exampleRow, null, 2)}</pre>
-        <p style="margin-top: 10px; font-size: 13px;">Total rows: ${parsedCSV.rows.length}</p>
-      `;
-
-      csvPreviewContent.innerHTML = previewHTML;
       csvPreviewSection.style.display = 'block';
       transformationSection.style.display = 'block';
       generateSection.style.display = 'block';
 
       // Reset later sections
       promptSection.style.display = 'none';
+      functionSection.style.display = 'none';
+      executeSection.style.display = 'none';
       outputSection.style.display = 'none';
 
     } catch (error) {
       console.error('CSV parsing error:', error);
       parsedCSV = null;
+      selectedExampleRow = null;
       csvError.textContent = `Error parsing CSV: ${error.message}`;
       csvError.classList.add('visible');
       csvPreviewSection.style.display = 'none';
       transformationSection.style.display = 'none';
       generateSection.style.display = 'none';
       promptSection.style.display = 'none';
+      functionSection.style.display = 'none';
+      executeSection.style.display = 'none';
       outputSection.style.display = 'none';
     }
   });
