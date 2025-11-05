@@ -16,5 +16,3 @@ Transform SQL SELECT output (vertical format with \G) into INSERT statements for
 ---
 
 All tools process data locally in your browser; no data is sent to any remote server.
-
-For additional encoding and decoding tools, check out [Cryptii](https://cryptii.com/).
