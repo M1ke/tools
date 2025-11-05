@@ -140,10 +140,29 @@
         color: #666;
         font-size: 13px;
       }
+
+      .home-link {
+        display: inline-block;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 14px;
+        margin-bottom: 20px;
+        transition: color 0.3s;
+      }
+
+      .home-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      .home-link::before {
+        content: "← ";
+      }
     </style>
   </head>
   <body>
     <div class="container">
+      <a href="index.html" class="home-link">Back to Home</a>
       <h1>SQL Insert from Select</h1>
       <p class="subtitle">Made by M1ke - <a href="https://github.com/M1ke/sql-cli-to-csv" target="_blank" title="This opens in a new tab">Find this on GitHub</a></p>
     <h2><label for="table">Table name</label></h2>
