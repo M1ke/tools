@@ -13,7 +13,7 @@ This is a suite of client-side browser-based developer tools, hosted on GitHub P
 - Vanilla JavaScript in `<script>` tags for functionality
 - No external dependencies or frameworks
 
-**Data Privacy**: A core principle is that no data leaves the user's browser. Each tool includes a notice stating "All processing for this is done in your browser; no data is sent to any remote server."
+**Data Privacy**: A core principle is that no data leaves the user's browser. Each tool includes a notice at the bottom of the page stating "All processing for this is done in your browser; no data is sent to any remote server."
 
 ## Current Tools
 
@@ -60,8 +60,9 @@ Converts SQL `SELECT ... \G` output (vertical format) into INSERT statements.
 
 **Base Branch**: The default branch for this repository is `main`. When creating pull requests, target the `main` branch.
 
+Add new files to git once created (unless they're a common type of file to ignore, in which case add them to `.gitignore`).
+
 **Important Notes**:
-- Always use `main` branch in git commands, NOT `master` (the repository uses `main` as its default branch)
 - When creating pull requests:
   - Keep descriptions concise with bullet points highlighting key changes
   - Do not mention Claude Code or AI assistance in commit messages or PR descriptions
