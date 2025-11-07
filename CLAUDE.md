@@ -17,11 +17,27 @@ This is a suite of client-side browser-based developer tools, hosted on GitHub P
 
 ## Current Tools
 
+### ai-csv.html - AI CSV Transformer
+Transforms CSV data using AI-generated JavaScript functions without uploading data to any LLM service.
+- User pastes CSV data and describes desired transformation
+- Generates a prompt for user to give to their AI assistant
+- User pastes back the AI-generated JavaScript function
+- Transformation executes locally in browser
+- Multi-step workflow with visual feedback
+
 ### jwt.html - JWT Parser and Editor
 Decodes JWT tokens into header/payload/signature components, allows editing, and reconstructs tokens.
 - Uses base64url encoding/decoding functions
 - Real-time validation with error messages
 - Does NOT sign tokens (user must provide signatures)
+
+### psalm-compare.html - Psalm Array Type Comparator
+Compares two Psalm array type definitions from error messages and shows only the differences.
+- Extracts two `array{}` type definitions from any error message text
+- Parses array shapes with support for nested structures (e.g., `array<array-key, mixed>`)
+- Handles commas within type definitions and sub-types
+- Outputs JSON showing keys that differ or exist in only one array
+- Example output: `{"role": {"first": "array<array-key, mixed>", "second": "list<string>"}}`
 
 ### sql-csv.html - SQL CLI to CSV Converter
 Converts SQL CLI table output (the ASCII art format with `+--+` borders) into CSV format.
