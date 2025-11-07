@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI CSV Transformer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: #444;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .home-link {
+      display: inline-block;
+      color: #667eea;
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 20px;
+      transition: color 0.3s;
+    }
+
+    .home-link:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .home-link::before {
+      content: "← ";
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical;
+      transition: border-color 0.3s;
+      min-height: 150px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea[readonly] {
+      background: #f8f9fa;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #764ba2;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: #d32f2f;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .error.visible {
+      display: block;
+    }
+
+    .success {
+      color: #2e7d32;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .success.visible {
+      display: block;
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #1565c0;
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    em {
+      color: #666;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="home-link">Back to Home</a>
+  <h1>AI CSV Transformer</h1>
+  <p class="subtitle">Transform CSV data using AI-generated JavaScript functions - all processing happens locally in your browser</p>
+
+  <div class="info-box">
+    <strong>How it works:</strong> Paste your CSV data, describe your desired transformation, generate a ready-to-use AI prompt, get a JavaScript function from your preferred AI assistant, paste it here, and transform your data - all without uploading your data anywhere.
+  </div>
+
+  <div class="section">
+    <label for="csv-input">
+      <span class="step-number">1</span>
+      Paste your CSV data:
+    </label>
+    <textarea id="csv-input" placeholder="name,email,age
+John Doe,john@example.com,30
+Jane Smith,jane@example.com,25"></textarea>
+    <div id="csv-error" class="error"></div>
+  </div>
+
+  <div class="section" id="csv-preview-section" style="display: none;">
+    <div class="info-box" style="background: #f1f8e9; border-color: #aed581;">
+      <strong>CSV Detected!</strong>
+      <div id="csv-preview-content"></div>
+      <button id="choose-another-row-btn" style="margin-top: 10px; padding: 8px 16px; font-size: 13px;">Choose Another Row</button>
+    </div>
+  </div>
+
+  <div class="section" id="transformation-section" style="display: none;">
+    <label for="transformation-input">
+      <span class="step-number">2</span>
+      Describe your transformation:
+    </label>
+    <textarea id="transformation-input" placeholder="Example: Filter rows where age is greater than 25, and return only the name and email fields in uppercase"></textarea>
+  </div>
+
+  <div class="section" id="generate-section" style="display: none;">
+    <button id="generate-prompt-btn">
+      <span class="step-number">3</span>
+      Generate AI Prompt
+    </button>
+  </div>
+
+  <div class="section" id="prompt-section" style="display: none;">
+    <label for="generated-prompt">
+      <span class="step-number">4</span>
+      Copy this prompt to your AI assistant (ChatGPT, Claude, etc.):
+    </label>
+    <textarea id="generated-prompt" readonly></textarea>
+    <div class="success visible">Prompt generated! Copy it and paste it directly into your preferred AI assistant.</div>
+  </div>
+
+  <div class="section" id="function-section" style="display: none;">
+    <label for="function-input">
+      <span class="step-number">5</span>
+      Paste the JavaScript function from the AI response:
+    </label>
+    <textarea id="function-input" placeholder="function processRow(row) {
+  // Your AI-generated function goes here
+  return row;
+}"></textarea>
+    <div id="function-error" class="error"></div>
+  </div>
+
+  <div class="section" id="execute-section" style="display: none;">
+    <button id="execute-btn">
+      <span class="step-number">6</span>
+      Transform CSV Data
+    </button>
+  </div>
+
+  <div class="section" id="output-section" style="display: none;">
+    <label for="output">
+      <span class="step-number">7</span>
+      Transformed output:
+    </label>
+    <textarea id="output" readonly></textarea>
+    <div class="success visible">Transformation complete!</div>
+  </div>
+
+  <p><em>All processing for this is done in your browser; no data is sent to any remote server</em></p>
+</div>
+
+<script>
+  console.log('AI CSV Transformer initialized');
+
+  const csvInput = document.getElementById('csv-input');
+  const csvPreviewSection = document.getElementById('csv-preview-section');
+  const csvPreviewContent = document.getElementById('csv-preview-content');
+  const chooseAnotherRowBtn = document.getElementById('choose-another-row-btn');
+  const transformationSection = document.getElementById('transformation-section');
+  const transformationInput = document.getElementById('transformation-input');
+  const generateSection = document.getElementById('generate-section');
+  const generatePromptBtn = document.getElementById('generate-prompt-btn');
+  const generatedPrompt = document.getElementById('generated-prompt');
+  const promptSection = document.getElementById('prompt-section');
+  const functionSection = document.getElementById('function-section');
+  const functionInput = document.getElementById('function-input');
+  const executeSection = document.getElementById('execute-section');
+  const executeBtn = document.getElementById('execute-btn');
+  const outputTextarea = document.getElementById('output');
+  const outputSection = document.getElementById('output-section');
+  const csvError = document.getElementById('csv-error');
+  const functionError = document.getElementById('function-error');
+
+  let parsedCSV = null;
+  let selectedExampleRow = null;
+
+  // Parse CSV data into array of objects
+  function parseCSV(csvText) {
+    console.log('Parsing CSV data...');
+    const lines = csvText.trim().split('\n');
+
+    if (lines.length < 2) {
+      throw new Error('CSV must have at least a header row and one data row');
+    }
+
+    // Parse header
+    const headers = lines[0].split(',').map(h => h.trim());
+    console.log('CSV Headers:', headers);
+
+    // Parse data rows
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim());
+      if (values.length !== headers.length) {
+        console.warn(`Row ${i} has ${values.length} values but expected ${headers.length}`);
+      }
+
+      const row = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      rows.push(row);
+    }
+
+    console.log(`Parsed ${rows.length} rows`);
+    return { headers, rows };
+  }
+
+  // Display CSV preview with a specific row
+  function displayCSVPreview(headers, rows, rowIndex) {
+    console.log(`Displaying CSV preview with row ${rowIndex + 1}`);
+
+    const exampleRow = rows[rowIndex];
+    selectedExampleRow = exampleRow;
+
+    const previewHTML = `
+      <p style="margin-top: 10px;"><strong>Headers:</strong> ${headers.join(', ')}</p>
+      <p style="margin-top: 10px;"><strong>Example row (row ${rowIndex + 1} of ${rows.length}):</strong></p>
+      <pre style="background: white; padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 12px;">${JSON.stringify(exampleRow, null, 2)}</pre>
+      <p style="margin-top: 10px; font-size: 13px;">Total rows: ${rows.length}</p>
+    `;
+
+    csvPreviewContent.innerHTML = previewHTML;
+  }
+
+  // Generate AI prompt based on CSV structure
+  function generateAIPrompt(headers, exampleRow, transformationDescription) {
+    console.log('Generating AI prompt...');
+
+    const sampleData = headers.map(h => `${h}: "${exampleRow[h]}"`).join(', ');
+
+    const prompt = `I need you to write a JavaScript function that transforms CSV data.
+
+The CSV has the following structure:
+- Headers: ${headers.join(', ')}
+
+Example row:
+${sampleData}
+
+Transformation requirements:
+${transformationDescription}
+
+Please write a function with this exact signature:
+
+\`\`\`javascript
+function processRow(row) {
+  // row is an object with keys: ${headers.join(', ')}
+  // Example: { ${headers.map(h => `${h}: "value"`).join(', ')} }
+
+  // Implement the transformation described above
+
+  // Return the transformed data
+  // You can return:
+  // - An object (will be converted to CSV)
+  // - A string (will be output as-is, one per line)
+  // - null/undefined (to skip this row)
+}
+\`\`\`
+
+Important:
+1. Only return the processRow function
+2. The function must accept a single 'row' parameter
+3. Do not include any code outside the function
+4. Do not include explanations, just the function code`;
+
+    console.log('Prompt generated');
+    return prompt;
+  }
+
+  // Execute the user-provided function on CSV data
+  function executeTransformation(functionCode, csvData) {
+    console.log('Executing transformation...');
+
+    try {
+      // Extract function from code (handle markdown code blocks)
+      let cleanedCode = functionCode.trim();
+      if (cleanedCode.startsWith('```')) {
+        console.log('Detected markdown code block, extracting function...');
+        const lines = cleanedCode.split('\n');
+        cleanedCode = lines.slice(1, -1).join('\n');
+        if (cleanedCode.startsWith('javascript')) {
+          cleanedCode = cleanedCode.substring(10).trim();
+        }
+      }
+
+      console.log('Creating function from code...');
+      // Create the function in a safe way
+      const processRow = eval(`(${cleanedCode})`);
+
+      if (typeof processRow !== 'function') {
+        throw new Error('The pasted code is not a valid function');
+      }
+
+      console.log('Function created successfully, processing rows...');
+      const results = [];
+      let processedCount = 0;
+      let skippedCount = 0;
+
+      for (let i = 0; i < csvData.rows.length; i++) {
+        const row = csvData.rows[i];
+        console.log(`Processing row ${i + 1}/${csvData.rows.length}:`, row);
+
+        try {
+          const result = processRow(row);
+
+          if (result === null || result === undefined) {
+            console.log(`Row ${i + 1} skipped (returned null/undefined)`);
+            skippedCount++;
+            continue;
+          }
+
+          results.push(result);
+          processedCount++;
+        } catch (rowError) {
+          console.error(`Error processing row ${i + 1}:`, rowError);
+          throw new Error(`Error in row ${i + 1}: ${rowError.message}`);
+        }
+      }
+
+      console.log(`Transformation complete: ${processedCount} rows processed, ${skippedCount} rows skipped`);
+
+      // Format output
+      if (results.length === 0) {
+        return 'No results (all rows were skipped)';
+      }
+
+      // If results are objects, convert to CSV
+      if (typeof results[0] === 'object' && results[0] !== null) {
+        console.log('Converting object results to CSV...');
+        const outputHeaders = Object.keys(results[0]);
+        const csvLines = [outputHeaders.join(',')];
+
+        results.forEach(result => {
+          const values = outputHeaders.map(h => {
+            const value = result[h] || '';
+            // Escape commas and quotes
+            if (value.toString().includes(',') || value.toString().includes('"')) {
+              return `"${value.toString().replace(/"/g, '""')}"`;
+            }
+            return value;
+          });
+          csvLines.push(values.join(','));
+        });
+
+        return csvLines.join('\n');
+      } else {
+        // Results are strings or primitives
+        console.log('Outputting results as lines...');
+        return results.map(r => r.toString()).join('\n');
+      }
+    } catch (error) {
+      console.error('Transformation error:', error);
+      throw error;
+    }
+  }
+
+  // Generate prompt button handler
+  generatePromptBtn.addEventListener('click', () => {
+    console.log('Generate prompt button clicked');
+    csvError.classList.remove('visible');
+    csvError.textContent = '';
+
+    const transformationDescription = transformationInput.value.trim();
+
+    if (!transformationDescription) {
+      csvError.textContent = 'Please describe your transformation first';
+      csvError.classList.add('visible');
+      console.warn('No transformation description provided');
+      return;
+    }
+
+    if (!parsedCSV || !selectedExampleRow) {
+      csvError.textContent = 'CSV data not parsed. Please paste CSV data first.';
+      csvError.classList.add('visible');
+      console.warn('CSV not parsed or no example row selected');
+      return;
+    }
+
+    try {
+      const prompt = generateAIPrompt(parsedCSV.headers, selectedExampleRow, transformationDescription);
+
+      generatedPrompt.value = prompt;
+      promptSection.style.display = 'block';
+      functionSection.style.display = 'block';
+      executeSection.style.display = 'block';
+
+      console.log('Prompt displayed to user, function and execute sections shown');
+    } catch (error) {
+      csvError.textContent = `Error generating prompt: ${error.message}`;
+      csvError.classList.add('visible');
+      console.error('Prompt generation error:', error);
+    }
+  });
+
+  // Execute transformation button handler
+  executeBtn.addEventListener('click', () => {
+    console.log('Execute transformation button clicked');
+    functionError.classList.remove('visible');
+    functionError.textContent = '';
+    csvError.classList.remove('visible');
+    csvError.textContent = '';
+
+    const functionCode = functionInput.value.trim();
+
+    if (!functionCode) {
+      functionError.textContent = 'Please paste the JavaScript function first';
+      functionError.classList.add('visible');
+      console.warn('No function code provided');
+      return;
+    }
+
+    if (!parsedCSV) {
+      const csvText = csvInput.value.trim();
+      if (!csvText) {
+        csvError.textContent = 'Please paste CSV data first';
+        csvError.classList.add('visible');
+        console.warn('No CSV data available');
+        return;
+      }
+
+      try {
+        parsedCSV = parseCSV(csvText);
+        console.log('CSV parsed successfully');
+      } catch (error) {
+        csvError.textContent = `Error parsing CSV: ${error.message}`;
+        csvError.classList.add('visible');
+        console.error('CSV parsing error:', error);
+        return;
+      }
+    }
+
+    try {
+      const output = executeTransformation(functionCode, parsedCSV);
+      outputTextarea.value = output;
+      outputSection.style.display = 'block';
+
+      console.log('Transformation successful, output displayed');
+    } catch (error) {
+      functionError.textContent = `Error executing function: ${error.message}`;
+      functionError.classList.add('visible');
+      console.error('Function execution error:', error);
+    }
+  });
+
+  // Choose another row button handler
+  chooseAnotherRowBtn.addEventListener('click', () => {
+    console.log('Choose another row button clicked');
+    if (!parsedCSV) {
+      console.warn('No CSV data available');
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * parsedCSV.rows.length);
+    displayCSVPreview(parsedCSV.headers, parsedCSV.rows, randomIndex);
+  });
+
+  // Update parsed CSV when input changes
+  csvInput.addEventListener('input', () => {
+    console.log('CSV input changed');
+    csvError.classList.remove('visible');
+    csvError.textContent = '';
+
+    const csvText = csvInput.value.trim();
+
+    if (!csvText) {
+      console.log('CSV input cleared');
+      parsedCSV = null;
+      selectedExampleRow = null;
+      csvPreviewSection.style.display = 'none';
+      transformationSection.style.display = 'none';
+      generateSection.style.display = 'none';
+      promptSection.style.display = 'none';
+      functionSection.style.display = 'none';
+      executeSection.style.display = 'none';
+      outputSection.style.display = 'none';
+      return;
+    }
+
+    try {
+      parsedCSV = parseCSV(csvText);
+
+      // Pick a random row for preview
+      const randomIndex = Math.floor(Math.random() * parsedCSV.rows.length);
+      displayCSVPreview(parsedCSV.headers, parsedCSV.rows, randomIndex);
+
+      csvPreviewSection.style.display = 'block';
+      transformationSection.style.display = 'block';
+      generateSection.style.display = 'block';
+
+      // Reset later sections
+      promptSection.style.display = 'none';
+      functionSection.style.display = 'none';
+      executeSection.style.display = 'none';
+      outputSection.style.display = 'none';
+
+    } catch (error) {
+      console.error('CSV parsing error:', error);
+      parsedCSV = null;
+      selectedExampleRow = null;
+      csvError.textContent = `Error parsing CSV: ${error.message}`;
+      csvError.classList.add('visible');
+      csvPreviewSection.style.display = 'none';
+      transformationSection.style.display = 'none';
+      generateSection.style.display = 'none';
+      promptSection.style.display = 'none';
+      functionSection.style.display = 'none';
+      executeSection.style.display = 'none';
+      outputSection.style.display = 'none';
+    }
+  });
+
+  console.log('Event listeners attached, ready for input');
+</script>
+</body>
+</html>

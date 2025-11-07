@@ -1,128 +1,144 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Convert SQL CLI to CSV</title>
-  </head>
-  <body>
-    <h1>Convert SQL CLI to CSV</h1>
-    <p>Made by M1ke - <a href="https://github.com/M1ke/sql-cli-to-csv" target="_blank" title="This opens in a new tab">Find this on GitHub</a></p>
-    <p>New! <a href="insert.html">generate SQL insert commands</a></p>
-    <h2><label for="input">Input</label></h2>
-    <textarea name="input" cols="150" rows="19" id="input"></textarea>
-    <h2><label for="output">Output</label></h2>
-    <textarea name="output" cols="150" rows="19" id="output"></textarea>
-    <p>Enter the name of a column, e.g "email" and if your CSV contains that column, the below textarea will include all values comma-separated. </p>
-    <p><label for="field">Column name</label> <input type="text" name="field" id="field"/></p>
-    <textarea readonly id="field-out" cols="150" rows="1" placeholder="Waiting for value column name"></textarea>
-    <p>Wrapping lets you replace a value in a string with the value of the named column above, using the placeholder %% (two percent signs). To see how this works try out "Hello %% world %%"</p>
-    <p><label for="wrap">Wrap</label> <input type="text" name="wrap" id="wrap" style="width: 500px;"/></p>
-    <textarea readonly id="wrap-out" cols="150" rows="1" placeholder="Waiting for valid column name and input to wrap (input must contain %% at least once)"></textarea>
-    <p><em>All processing for this is done in your browser; no data is sent to any remote server</em></p>
-    <h3>Example</h3>
-    <p>If you're unsure what input this is expecting, try pasting in the following:</p>
-    <pre>
-+---------+--------------+
-| user_id | name         |
-+---------+--------------+
-|       1 | Tim Fish     |
-|       9 | Steve Mullet |
-|      23 | Ken Salmon   |
-+---------+--------------+
-    </pre>
-    <script type="text/javascript">
-      function csvFromTable(table){
-        return table.trim().split('\n').filter((line) => line[0]!=='+').map((line) => {
-          line = line.substr(1, line.length-2)
-          const fields = line.split(' | ')
-          console.log(fields.length)
-          return fields.map((field) => field.trim()).map((field) => field.replace('"', '""'))
-            .map((field) => '"'+field+'"').join(',')
-        }).join('\n')
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Tools - Developer Utilities</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-      function column(csvString, columnName) {
-         const lines = csvString.split('\n');
-         const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
-         const columnIndex = headers.indexOf(columnName);
-         return lines.slice(1).map(line => line.split(',')[columnIndex]).filter(val => val);
-      }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-      function fieldReset(){
-         const fieldOutEl = document.getElementById('field-out')
-        fieldOutEl.value=''
-        fieldOutEl.rows=1
-      }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
 
-      function wrapReset(){
-        fieldReset()
-         const wrapOutEl = document.getElementById('wrap-out')
-        wrapOutEl.value = ''
-        wrapOutEl.rows = 1
-      }
+    a[target="_blank"]::after {
+        content: " ↗";
+        font-size: 0.8em;
+    }
 
-      function field(csv){
-        const field = document.getElementById('field').value
-        if (!field){
-          fieldReset()
-          return;
-        }
-        
-        console.log('finding field', { field })
-        
-        if (!csv){
-          const input = document.getElementById('input').value
-          csv = csvFromTable(input)
-        }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
 
-        fieldOut(csv, field)
-      }
+    .subtitle {
+      color: #666;
+      margin-bottom: 40px;
+      font-size: 16px;
+    }
 
-      function fieldOut(csv, field){
-        const list = column(csv, field)
+    .suffix {
+        color: #666;
+        margin-top: 20px;
+        font-size: 16px;
+    }
 
-        const fieldOutEl = document.getElementById('field-out')
-      
-        fieldOutEl.value = list.join(',')
-        fieldOutEl.rows = 3
-      }
+    .tools-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-      function wrap(csv){
-        const field = document.getElementById('field').value
-        const wrap = document.getElementById('wrap').value
-        if (!field || !wrap || wrap.indexOf('%%')<0){
-          wrapReset()
-          return;
-        }
-        
-        console.log('wrapping field', { field, wrap })
-        
-        if (!csv){
-          const input = document.getElementById('input').value
-          csv = csvFromTable(input)
-        }
+    .tool-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+    }
 
-        wrapOut(csv, field, wrap)
-      }
+    .tool-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      transform: translateY(-2px);
+    }
 
-      function wrapOut(csv, field, wrap){
-        // Slice(1, -1) here assumes string is always wrapped in comma, simpler than replacing them
-        const list = column(csv, field).map((val) => wrap.replace(/\%\%/g, val.slice(1, -1)))
+    .tool-card h2 {
+      color: #667eea;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
 
-        const wrapOutEl = document.getElementById('wrap-out')
-        wrapOutEl.value = list.join("\n")
-        wrapOutEl.rows = list.length
-      }
+    .tool-card p {
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+    }
 
-      document.getElementById('input').addEventListener('input', (event) => {
-        console.log('Input', {event})
-        const csv = csvFromTable(event.target.value)
-        document.getElementById('output').value = csv
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
 
-        field(csv)
-        wrap(csv)
-      })
-      document.getElementById('field').addEventListener('input', () => field())
-      document.getElementById('wrap').addEventListener('input', () => wrap())
-    </script>
-  </body>
+    footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Web Tools</h1>
+    <p class="subtitle">A collection of browser-based developer utilities</p>
+
+    <div class="tools-list">
+      <a href="ai-csv.html" class="tool-card">
+        <h2>AI CSV Transformer</h2>
+        <p>Transform CSV data using AI-generated JavaScript functions without uploading your data to any LLM service.</p>
+      </a>
+
+      <a href="jwt.html" class="tool-card">
+        <h2>JWT Parser and Editor</h2>
+        <p>Decode JWT tokens, edit header and payload sections, and reconstruct tokens with modified values.</p>
+      </a>
+
+      <a href="sql-csv.html" class="tool-card">
+        <h2>SQL CLI to CSV Converter</h2>
+        <p>Convert SQL command-line table output into CSV format, extract specific columns, and wrap values with custom templates.</p>
+      </a>
+
+      <a href="sql-insert.html" class="tool-card">
+        <h2>SQL Insert Generator</h2>
+        <p>Transform SQL SELECT output (vertical format with \G) into INSERT statements for easy data duplication.</p>
+      </a>
+
+      <a href="tech-debt-generator.html" class="tool-card">
+        <h2>Tech Debt Generator</h2>
+        <p>Generate random JavaScript code filled with anti-patterns and bad practices. Perfect for code review training and refactoring demos.</p>
+      </a>
+    </div>
+    <p class="suffix">For additional encoding and decoding tools, check out <a href="https://cryptii.com/" target="_blank" title="Opens in a new tab"> Cryptii</a>.</p>
+    <footer>
+      <p>Made by M1ke - <a href="https://github.com/M1ke/tools" target="_blank">Find this on GitHub</a></p>
+      <p><em>All tools process data locally in your browser; no data is sent to any remote server</em></p>
+    </footer>
+  </div>
+</body>
 </html>
