@@ -1,0 +1,368 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body & Background */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Homepage specific container */
+body.homepage .container {
+  max-width: 900px;
+  padding: 40px;
+}
+
+/* External link indicator */
+a[target="_blank"]::after {
+  content: " ↗";
+  font-size: 0.8em;
+}
+
+/* Typography */
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+body.homepage h1 {
+  font-size: 32px;
+}
+
+h2 {
+  color: #444;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+h3 {
+  color: #555;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+p {
+  color: #555;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+em {
+  color: #666;
+  font-size: 13px;
+}
+
+pre {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Subtitle */
+.subtitle {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+body.homepage .subtitle {
+  margin-bottom: 40px;
+  font-size: 16px;
+}
+
+.subtitle a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.subtitle a:hover {
+  text-decoration: underline;
+}
+
+/* Suffix (homepage) */
+.suffix {
+  color: #666;
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+/* Navigation */
+.home-link {
+  display: inline-block;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 20px;
+  transition: color 0.3s;
+}
+
+.home-link:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.home-link::before {
+  content: "← ";
+}
+
+/* Homepage Tool Cards */
+.tools-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tool-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: block;
+}
+
+.tool-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.tool-card h2 {
+  color: #667eea;
+  font-size: 20px;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.tool-card p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Footer (homepage) */
+footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+footer a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Form Elements */
+label {
+  display: block;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  resize: vertical;
+  transition: border-color 0.3s;
+  min-height: 150px;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+textarea[readonly] {
+  background: #f8f9fa;
+}
+
+/* JWT tool specific textarea styles */
+#input {
+  min-height: 100px;
+}
+
+#header, #payload, #signature {
+  min-height: 150px;
+  background: #f8f9fa;
+}
+
+#output {
+  min-height: 100px;
+  background: #e8f5e9;
+}
+
+/* SQL tools textarea styles */
+.sql-tool textarea {
+  margin-bottom: 15px;
+}
+
+/* Input Fields */
+input[type="text"] {
+  padding: 10px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  margin-bottom: 15px;
+}
+
+.sql-insert-tool input[type="text"] {
+  width: 100%;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.checkbox-group {
+  margin-bottom: 20px;
+}
+
+.checkbox-group label {
+  display: inline;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+/* Buttons */
+button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #764ba2;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Layout Helpers */
+.section {
+  margin-bottom: 25px;
+}
+
+.field-group {
+  margin-bottom: 20px;
+}
+
+/* Grid Layout (JWT tool) */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* State Classes */
+.hidden {
+  display: none;
+}
+
+.error {
+  color: #d32f2f;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.error.visible {
+  display: block;
+}
+
+.success {
+  color: #2e7d32;
+  font-size: 13px;
+  margin-top: 5px;
+  display: none;
+}
+
+.success.visible {
+  display: block;
+}
+
+/* Info Box (AI CSV tool) */
+.info-box {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1565c0;
+}
+
+/* Step Numbers (AI CSV tool) */
+.step-number {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 8px;
+}
