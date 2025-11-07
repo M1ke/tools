@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psalm Array Type Comparator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="home-link">Back to Home</a>
+  <h1>Psalm Array Type Comparator</h1>
+  <p class="subtitle">Compare two array type definitions from Psalm error messages.</p>
+
+  <div class="section">
+    <label for="input">Psalm Error Message:</label>
+    <textarea id="input" placeholder="Paste Psalm error message containing two array{} type definitions"></textarea>
+  </div>
+
+  <div class="section">
+    <label for="output">Type Differences:</label>
+    <textarea id="output" readonly></textarea>
+  </div>
+
+  <h2>Example</h2>
+  <p>Input:</p>
+  <pre>The type 'array{adm: bool, ctd: string, eml: string, exp: int, img: string, lgo: null|string, llid: int|null, lnm: null|string, name: string, role: array<array-key, mixed>, uid: int}' is more general than the declared return type 'array{adm: bool, ctd: string, eml: string, exp: int, img: string, lgo: null|string, llid: int|null, lnm: null|string, name: string, role: list<string>, uid: int}'</pre>
+  <p><em>All processing for this is done in your browser; no data is sent to any remote server</em></p>
+</div>
+
+<script>
+	const inputEl = document.getElementById('input');
+	const outputEl = document.getElementById('output');
+
+	function extractArrayShapes(text) {
+		const shapes = [];
+		let pos = 0;
+
+		while (pos < text.length) {
+			const arrayStart = text.indexOf('array{', pos);
+			if (arrayStart === -1) break;
+
+			let depth = 0;
+			let i = arrayStart + 5;
+			let inShape = false;
+
+			for (; i < text.length; i++) {
+				if (text[i] === '{') {
+					depth++;
+					inShape = true;
+				} else if (text[i] === '}') {
+					depth--;
+					if (depth === 0) {
+						break;
+					}
+				}
+			}
+
+			if (inShape && i < text.length) {
+				const content = text.substring(arrayStart + 6, i);
+				shapes.push(content);
+				pos = i + 1;
+			} else {
+				break;
+			}
+		}
+
+		return shapes;
+	}
+
+	function parseArrayShape(content) {
+		const result = {};
+		let pos = 0;
+
+		while (pos < content.length) {
+			pos = skipWhitespace(content, pos);
+			if (pos >= content.length) break;
+
+			const keyEnd = content.indexOf(':', pos);
+			if (keyEnd === -1) break;
+
+			const key = content.substring(pos, keyEnd).trim();
+			pos = keyEnd + 1;
+			pos = skipWhitespace(content, pos);
+
+			const typeEnd = findTypeEnd(content, pos);
+			const type = content.substring(pos, typeEnd).trim();
+
+			result[key] = type;
+			pos = typeEnd;
+
+			pos = skipWhitespace(content, pos);
+			if (pos < content.length && content[pos] === ',') {
+				pos++;
+			}
+		}
+
+		return result;
+	}
+
+	function skipWhitespace(str, pos) {
+		while (pos < str.length && /\s/.test(str[pos])) {
+			pos++;
+		}
+		return pos;
+	}
+
+	function findTypeEnd(content, start) {
+		let depth = 0;
+		let angleDepth = 0;
+		let pos = start;
+
+		while (pos < content.length) {
+			const char = content[pos];
+
+			if (char === '{') {
+				depth++;
+			} else if (char === '}') {
+				if (depth === 0) break;
+				depth--;
+			} else if (char === '<') {
+				angleDepth++;
+			} else if (char === '>') {
+				angleDepth--;
+			} else if (char === ',' && depth === 0 && angleDepth === 0) {
+				break;
+			}
+
+			pos++;
+		}
+
+		return pos;
+	}
+
+	function compareArrayShapes(shape1, shape2) {
+		const differences = {};
+		const allKeys = new Set([...Object.keys(shape1), ...Object.keys(shape2)]);
+
+		for (const key of allKeys) {
+			const type1 = shape1[key];
+			const type2 = shape2[key];
+
+			if (type1 === undefined) {
+				differences[key] = {
+					first: null,
+					second: type2
+				};
+			} else if (type2 === undefined) {
+				differences[key] = {
+					first: type1,
+					second: null
+				};
+			} else if (type1 !== type2) {
+				differences[key] = {
+					first: type1,
+					second: type2
+				};
+			}
+		}
+
+		return differences;
+	}
+
+	inputEl.addEventListener('input', () => {
+		const input = inputEl.value.trim();
+
+		if (!input) {
+			outputEl.value = '';
+			return;
+		}
+
+		try {
+			const shapes = extractArrayShapes(input);
+
+			if (shapes.length < 2) {
+				outputEl.value = 'Error: Could not find two array{} type definitions in the input.';
+				return;
+			}
+
+			const shape1 = parseArrayShape(shapes[0]);
+			const shape2 = parseArrayShape(shapes[1]);
+
+			const differences = compareArrayShapes(shape1, shape2);
+
+			if (Object.keys(differences).length === 0) {
+				outputEl.value = '{}';
+			} else {
+				outputEl.value = JSON.stringify(differences, null, 2);
+			}
+		} catch (e) {
+			outputEl.value = 'Error parsing input: ' + e.message;
+		}
+	});
+</script>
+</body>
+</html>
