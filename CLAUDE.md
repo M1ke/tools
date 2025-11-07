@@ -60,6 +60,13 @@ Converts SQL `SELECT ... \G` output (vertical format) into INSERT statements.
 
 **Base Branch**: The default branch for this repository is `main`. When creating pull requests, target the `main` branch.
 
+**Important Notes**:
+- Always use `main` branch in git commands, NOT `master` (the repository uses `main` as its default branch)
+- When creating pull requests:
+  - Keep descriptions concise with bullet points highlighting key changes
+  - Do not mention Claude Code or AI assistance in commit messages or PR descriptions
+  - Focus on what changed and why it matters to users
+
 ## Deployment
 
 The repository is deployed to GitHub Pages at `https://m1ke.github.io/tools/`
