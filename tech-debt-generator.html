@@ -5,30 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tech Debt Generator</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
         h1 {
             color: #333;
-            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        h3 {
+            color: #555;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .home-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+
+        .home-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .home-link::before {
+            content: "← ";
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        ul {
+            color: #555;
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+
         .notice {
             background-color: #e3f2fd;
             border-left: 4px solid #2196F3;
             padding: 12px;
             margin-bottom: 20px;
             border-radius: 4px;
+            color: #1565c0;
+            font-size: 14px;
         }
+
         .warning {
             background-color: #fff3cd;
             border-left: 4px solid #ff9800;
@@ -36,8 +93,11 @@
             margin-bottom: 20px;
             border-radius: 4px;
             font-weight: bold;
+            color: #e65100;
+            font-size: 14px;
         }
-        #generateBtn {
+
+        button {
             display: block;
             width: 100%;
             padding: 20px;
@@ -49,42 +109,77 @@
             border-radius: 8px;
             cursor: pointer;
             margin-bottom: 20px;
-            transition: transform 0.1s;
+            transition: transform 0.1s, box-shadow 0.3s;
         }
-        #generateBtn:hover {
+
+        button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        #generateBtn:active {
+
+        button:active {
             transform: translateY(0);
         }
-        #output {
-            width: 100%;
-            min-height: 400px;
-            font-family: 'Courier New', monospace;
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
             font-size: 14px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            resize: vertical;
-            background-color: #fafafa;
         }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            transition: border-color 0.3s;
+            min-height: 400px;
+            background-color: #f8f9fa;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         .example {
-            margin-top: 20px;
+            margin-top: 30px;
             padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
             border: 1px solid #e0e0e0;
         }
+
         .example h3 {
             margin-top: 0;
+            color: #555;
+        }
+
+        em {
             color: #666;
+            font-size: 13px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .output-section {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <a href="index.html" class="home-link">Back to Home</a>
+
         <h1>Tech Debt Generator</h1>
+        <p class="subtitle">Generate random JavaScript code filled with anti-patterns and bad practices</p>
 
         <div class="notice">
             All processing for this is done in your browser; no data is sent to any remote server.
@@ -96,7 +191,10 @@
 
         <button id="generateBtn">Generate Tech Debt</button>
 
-        <textarea id="output" placeholder="Click the button above to generate some beautiful tech debt..."></textarea>
+        <div id="outputSection" class="output-section hidden">
+            <label for="output">Generated Code:</label>
+            <textarea id="output"></textarea>
+        </div>
 
         <div class="example">
             <h3>What is this?</h3>
@@ -108,6 +206,8 @@
                 <li>Creating realistic "before" examples for refactoring demos</li>
             </ul>
         </div>
+
+        <p style="margin-top: 30px;"><em>All processing for this is done in your browser; no data is sent to any remote server</em></p>
     </div>
 
     <script>
@@ -355,12 +455,16 @@ function getValue(key) {
         }
 
         document.getElementById('generateBtn').addEventListener('click', function() {
-            document.getElementById('output').value = generateTechDebt();
-        });
+            const outputSection = document.getElementById('outputSection');
+            const output = document.getElementById('output');
 
-        // Generate on page load
-        window.addEventListener('load', function() {
-            document.getElementById('output').value = generateTechDebt();
+            // Show the output section if it's hidden
+            if (outputSection.classList.contains('hidden')) {
+                outputSection.classList.remove('hidden');
+            }
+
+            // Generate and display the code
+            output.value = generateTechDebt();
         });
     </script>
 </body>
