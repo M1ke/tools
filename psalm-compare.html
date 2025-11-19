@@ -161,6 +161,20 @@
 		return differences;
 	}
 
+	function findDifferences(input){
+	  const shapes = extractArrayShapes(input);
+
+	  if (shapes.length < 2) {
+		  outputEl.value = 'Error: Could not find two array{} type definitions in the input.';
+		  return;
+	  }
+
+	  const shape1 = parseArrayShape(shapes[0]);
+	  const shape2 = parseArrayShape(shapes[1]);
+
+	  return compareArrayShapes(shape1, shape2);
+  }
+
 	inputEl.addEventListener('input', () => {
 		const input = inputEl.value.trim();
 
@@ -170,17 +184,7 @@
 		}
 
 		try {
-			const shapes = extractArrayShapes(input);
-
-			if (shapes.length < 2) {
-				outputEl.value = 'Error: Could not find two array{} type definitions in the input.';
-				return;
-			}
-
-			const shape1 = parseArrayShape(shapes[0]);
-			const shape2 = parseArrayShape(shapes[1]);
-
-			const differences = compareArrayShapes(shape1, shape2);
+		  const differences = findDifferences(input);
 
 			if (Object.keys(differences).length === 0) {
 				outputEl.value = '{}';

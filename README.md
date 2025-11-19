@@ -16,6 +16,17 @@ Convert SQL command-line table output into CSV format, extract specific columns,
 ### [SQL Insert Generator](https://m1ke.github.io/tools/sql-insert.html)
 Transform SQL SELECT output (vertical format with \G) into INSERT statements for easy data duplication.
 
+### [Psalm Array Type Comparator](https://m1ke.github.io/tools/psalm-compare.html)
+Compare two Psalm array type definitions from error messages and show only the differences in JSON format.
+
 ---
 
 All tools process data locally in your browser; no data is sent to any remote server.
+
+## Development
+
+### Testing
+Run the test suite for psalm-compare tool:
+```bash
+node psalm-compare.test.js
+```
