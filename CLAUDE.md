@@ -76,7 +76,7 @@ Converts SQL `SELECT ... \G` output (vertical format) into INSERT statements.
 
 **Base Branch**: The default branch for this repository is `main`. When creating pull requests, target the `main` branch.
 
-Add new files to git once created (unless they're a common type of file to ignore, in which case add them to `.gitignore`).
+Always add new files to git once created (unless they're a common type of file to ignore, in which case add them to `.gitignore`).
 
 **Important Notes**:
 - When creating pull requests:
